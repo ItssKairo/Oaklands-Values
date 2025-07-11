@@ -3,17 +3,14 @@ import { LeaderboardItem } from '../types/api';
 
 interface LeaderboardProps {
   leaderboard: LeaderboardItem[];
-  resetTime: string;
-  lastUpdate: string;
+
 }
 
-export default function Leaderboard({ leaderboard, resetTime, lastUpdate }: LeaderboardProps) {
+export default function Leaderboard({ leaderboard }: LeaderboardProps) {
   return (
     <div className="bg-[var(--card-bg)] rounded-xl p-6 border border-[var(--border-color)] shadow-lg mb-8">
       <h2 className="text-2xl font-bold text-white mb-4">Top Materials Today</h2>
-      <p className="text-sm text-gray-400 mb-4">
-        Last Updated: {new Date(lastUpdate).toLocaleString()} (Resets: {new Date(resetTime).toLocaleDateString()})
-      </p>
+
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-[var(--border-color)]">
           <thead>

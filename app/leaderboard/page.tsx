@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { fetchLeaderboardData } from '../lib/api';
 import { LeaderboardData } from '../types/api';
 import Leaderboard from '../components/Leaderboard';
@@ -8,27 +8,12 @@ import CountdownTimer from '../components/CountdownTimer';
 import Navigation from '../components/Navigation';
 
 export default function LeaderboardPage() {
-  const [leaderboardData, setLeaderboardData] = useState<LeaderboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function loadLeaderboardData() {
-      try {
-        setLoading(true);
-        const data = await fetchLeaderboardData();
-        setLeaderboardData(data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load leaderboard data. Please try again later.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadLeaderboardData();
-  }, []);
+  const { data: leaderboardData, isLoading, isError, error } = useQuery<LeaderboardData>({
+    queryKey: ['leaderboardData'],
+    queryFn: fetchLeaderboardData,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -52,21 +37,47 @@ export default function LeaderboardPage() {
                 <rect x="0" y="0" width="100" height="100" fill="url(#gradient)" />
               </svg>
             </div>
-            {leaderboardData && <CountdownTimer resetTime={leaderboardData.reset_time} />}
+            {leaderboardData?.reset_time && <CountdownTimer resetTime={leaderboardData.reset_time} />}
           </header>
 
-          {loading ? (
-            <div className="text-center text-white text-lg">Loading leaderboard...</div>
-          ) : error ? (
+          {isError ? (
             <div className="bg-red-900/20 border border-red-800 text-red-100 p-5 rounded-lg shadow-sm transition-all duration-[var(--animation-duration-fast)]" role="alert">
-              {error}
+              {error?.message || 'An unknown error occurred.'}
             </div>
           ) : leaderboardData ? (
             <Leaderboard
               leaderboard={leaderboardData.leaderboard}
-              resetTime={leaderboardData.reset_time}
-              lastUpdate={leaderboardData.last_update}
+
             />
+          ) : isLoading ? (
+            <div className="animate-pulse bg-[var(--card-bg)] rounded-xl p-6 border border-[var(--border-color)] shadow-lg mb-8 overflow-x-auto">
+              <div className="h-8 bg-gray-700 rounded w-3/4 mb-4"></div>
+              <div className="h-4 bg-gray-700 rounded w-1/2 mb-4"></div>
+              <table className="min-w-full divide-y divide-gray-700">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-700">
+                  {[...Array(25)].map((_, i) => (
+                    <tr key={i}>
+                      <td className="px-4 py-2 whitespace-nowrap">
+                        <div className="h-4 bg-gray-700 rounded w-12"></div>
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap">
+                        <div className="h-4 bg-gray-700 rounded w-32"></div>
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap">
+                        <div className="h-4 bg-gray-700 rounded w-24"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
             <div className="text-center text-white text-lg">No leaderboard data available.</div>
           )}
