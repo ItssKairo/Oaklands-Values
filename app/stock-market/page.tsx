@@ -29,7 +29,6 @@ export default function StockMarketPage() {
   const [filteredStocks, setFilteredStocks] = useState<CategorizedStockItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
 
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState(''); 

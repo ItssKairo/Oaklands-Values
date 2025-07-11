@@ -66,7 +66,13 @@ export default function Navigation() {
             >
               Stock Market
             </Link>
-
+            <Link 
+              href="/leaderboard" 
+              className={`text-base font-medium ${pathname === '/leaderboard' ? 'text-[var(--accent-purple)] border-b-2 border-[var(--accent-purple)]' : 'text-gray-300 hover:text-white'} transition-all duration-[var(--animation-duration-fast)] py-2`}
+              aria-label="Go to Leaderboard page"
+            >
+              Leaderboard
+            </Link>
           </div>
         </div>
       </nav>
