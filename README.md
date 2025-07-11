@@ -1,5 +1,14 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+# Oaklands Values
+
+This project is a Next.js application that displays stock market data for Oaklands. It fetches data from a public API and presents it in a user-friendly interface, allowing for searching, filtering, and sorting of stock items.
+
+## Recent Updates
+
+- Resolved TypeScript linting errors (`no-unused-vars`, `no-explicit-any`) in `app/lib/api.ts` and `app/stock-market/page.tsx`.
+- Corrected type inconsistencies in `app/lib/api.ts` to align with `CategorizedStockItem` definitions.
+
 ## Getting Started
 
 First, run the development server:
@@ -19,6 +28,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Robots.txt
+
+A `robots.txt` file has been added to the `public` directory to control web crawler access to the site. This helps manage which parts of the site are indexed by search engines.
 
 ## Learn More
 
