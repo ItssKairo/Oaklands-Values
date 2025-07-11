@@ -1,0 +1,67 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+
+interface CountdownTimerProps {
+  resetTime: string;
+}
+
+const CountdownTimer: React.FC<CountdownTimerProps> = ({ resetTime }) => {
+  const [timeLeft, setTimeLeft] = useState({});
+
+  useEffect(() => {
+    const targetDate = new Date(resetTime);
+    if (isNaN(targetDate.getTime())) {
+      setTimeLeft({}); 
+      return;
+    }
+
+    const calculateAndUpdateTime = () => {
+      const difference = +targetDate - +new Date();
+      let newTimeLeft = {};
+
+      if (difference > 0) {
+        newTimeLeft = {
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60)) % 60,
+          seconds: Math.floor((difference / 1000)) % 60,
+        };
+      } else {
+
+      }
+      setTimeLeft(newTimeLeft);
+    };
+
+    calculateAndUpdateTime();
+
+    const timer = setInterval(calculateAndUpdateTime, 1000);
+
+    return () => clearInterval(timer);
+  }, [resetTime]);
+
+  const timerComponents: React.JSX.Element[] = [];
+
+  Object.keys(timeLeft).forEach((interval) => {
+    if (!timeLeft[interval as keyof typeof timeLeft]) {
+      return;
+    }
+
+    timerComponents.push(
+      <span key={interval}>
+        {timeLeft[interval as keyof typeof timeLeft]} {interval.charAt(0)}
+      </span>
+    );
+  });
+
+  return (
+    <div className="text-sm text-gray-400 mt-4 text-center">
+      {timerComponents.length ? (
+        <p>Next Refresh in: {timerComponents.join(' ')}</p>
+      ) : (
+        <p>Refreshing soon...</p>
+      )}
+    </div>
+  );
+};
+
+export default CountdownTimer;

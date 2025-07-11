@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchStockData, transformStockData } from '../lib/api';
+import { fetchStockData, transformStockData, fetchLeaderboardData } from '../lib/api';
+import CountdownTimer from '../components/CountdownTimer';
 import { CategorizedStockItem } from '../types/api';
 import StockCard from '../components/StockCard';
 import SearchBar from '../components/SearchBar';
@@ -29,6 +30,7 @@ export default function StockMarketPage() {
   const [filteredStocks, setFilteredStocks] = useState<CategorizedStockItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [resetTime, setResetTime] = useState<string | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState(''); 
@@ -61,8 +63,10 @@ export default function StockMarketPage() {
     async function loadData() {
       try {
         setLoading(true);
-        const data = await fetchStockData();
-        const transformedData = transformStockData(data);
+        const stockData = await fetchStockData();
+        const leaderboardData = await fetchLeaderboardData();
+        const transformedData = transformStockData(stockData);
+        setResetTime(leaderboardData.reset_time);
         setStocks(transformedData);
         
 
@@ -166,6 +170,7 @@ export default function StockMarketPage() {
               />
             </div>
           </div>
+          {resetTime && <CountdownTimer resetTime={resetTime} />}
         </header>
         
         {loading ? (

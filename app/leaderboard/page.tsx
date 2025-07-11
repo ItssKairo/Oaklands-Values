@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { fetchLeaderboardData } from '../lib/api';
 import { LeaderboardData } from '../types/api';
 import Leaderboard from '../components/Leaderboard';
+import CountdownTimer from '../components/CountdownTimer';
 import Navigation from '../components/Navigation';
 
 export default function LeaderboardPage() {
@@ -51,6 +52,7 @@ export default function LeaderboardPage() {
                 <rect x="0" y="0" width="100" height="100" fill="url(#gradient)" />
               </svg>
             </div>
+            {leaderboardData && <CountdownTimer resetTime={leaderboardData.reset_time} />}
           </header>
 
           {loading ? (
