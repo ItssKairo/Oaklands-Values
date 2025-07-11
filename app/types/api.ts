@@ -1,4 +1,6 @@
 export interface StockValue {
+  difference: number;
+  type: string;
   current_value: number;
   last_update: string;
   last_difference: number;
