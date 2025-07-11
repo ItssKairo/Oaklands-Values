@@ -10,6 +10,10 @@ export default function Footer() {
         <p className="mb-2">
           For issues, message <span className="text-white font-medium">itskairo.</span> on Discord.
         </p>
+        <p className="text-xs text-gray-600 mt-4">
+          Disclaimer: This site uses data from the Oaklands Public API. Prices may not perfectly match in-game values.
+          Oaklands logo and other assets belong to Typical Developers. This site is unofficial and not affiliated with Typical Developers.
+        </p>
       </div>
     </footer>
   );

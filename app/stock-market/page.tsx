@@ -1,8 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+'use client';
+
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { fetchStockData, transformStockData, fetchLeaderboardData } from '../lib/api';
+import { StockData, LeaderboardData } from '../types/api';
 import CountdownTimer from '../components/CountdownTimer';
 import { CategorizedStockItem } from '../types/api';
 import StockCard from '../components/StockCard';
@@ -26,12 +30,7 @@ const slugify = (text: string) => {
 
 export default function StockMarketPage() {
 
-  const [stocks, setStocks] = useState<CategorizedStockItem[]>([]);
   const [filteredStocks, setFilteredStocks] = useState<CategorizedStockItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [resetTime, setResetTime] = useState<string | null>(null);
-
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState(''); 
  
@@ -41,53 +40,45 @@ export default function StockMarketPage() {
   const router = useRouter();
   
 
-  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
-
-
   const handleCardClick = useCallback((stock: CategorizedStockItem) => {
     setSelectedStock(stock);
     const slug = slugify(stock.name);
-
     router.push(`/stock-market#${slug}`, { scroll: false });
   }, [router]);
 
-
   const handleModalClose = useCallback(() => {
     setSelectedStock(null);
-
     router.push('/stock-market', { scroll: false });
   }, [router]);
 
+  const { data, isLoading, isError, error } = useQuery<{
+    stockData: StockData;
+    leaderboardData: LeaderboardData;
+  }>({
+    queryKey: ['stockMarketData'],
+    queryFn: async () => {
+      const stockData = await fetchStockData();
+      const leaderboardData = await fetchLeaderboardData();
+      return { stockData, leaderboardData };
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
+
+  const stocks = useMemo(() => {
+    if (!data) return [];
+    return transformStockData(data.stockData);
+  }, [data]);
+
+  const resetTime = data?.leaderboardData?.reset_time || null;
+
+  const availableCategories = useMemo(() => {
+    if (!stocks.length) return [];
+    return [...new Set(stocks.map(item => item.category))];
+  }, [stocks]);
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        setLoading(true);
-        const stockData = await fetchStockData();
-        const leaderboardData = await fetchLeaderboardData();
-        const transformedData = transformStockData(stockData);
-        setResetTime(leaderboardData.reset_time);
-        setStocks(transformedData);
-        
-
-        const categories = [...new Set(transformedData.map(item => item.category))];
-        
-        setAvailableCategories(categories);
-        
-        setError(null);
-      } catch (err) {
-        setError('Failed to load stock data. Please try again later.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    
-    loadData();
-  }, []);
-  
-  useEffect(() => {
-    if (!stocks.length || loading) return;
+    if (!stocks.length || isLoading) return;
 
     const handleHashChange = () => {
       const hash = window.location.hash.substring(1);
@@ -105,27 +96,23 @@ export default function StockMarketPage() {
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
-  }, [stocks, loading]); 
-
+  }, [stocks, isLoading]);
 
   useEffect(() => {
     if (!stocks.length) return;
-    
+
     let result = [...stocks];
-    
 
     if (searchTerm) {
-      result = result.filter(stock => 
+      result = result.filter(stock =>
         stock.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
 
     if (categoryFilter) {
       result = result.filter(stock => stock.category === categoryFilter);
     }
 
-    
     setFilteredStocks(result);
   }, [stocks, searchTerm, categoryFilter]);
 
@@ -135,6 +122,8 @@ export default function StockMarketPage() {
       <div className="py-8 px-4 sm:px-6 lg:px-8 transition-all duration-[var(--animation-duration-fast)]">
         <div className="max-w-7xl mx-auto">
         <header className="mb-10 relative overflow-hidden rounded-xl p-8 md:p-12 bg-gradient-to-br from-[var(--background)] to-[var(--accent-grey)] border border-[var(--border-color)] shadow-lg">
+          {isLoading && <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20"><p className="text-white text-xl">Loading data...</p></div>}
+          {isError && <div className="absolute inset-0 bg-red-900/50 flex items-center justify-center z-20"><p className="text-white text-xl">Error: {error?.message || 'Failed to fetch data'}</p></div>}
           <div className="relative z-10 text-center">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-3 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent inline-block tracking-tight leading-tight">
               Oaklands Stock Market
@@ -173,7 +162,7 @@ export default function StockMarketPage() {
           {resetTime && <CountdownTimer resetTime={resetTime} />}
         </header>
         
-        {loading ? (
+        {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse" aria-live="polite" aria-busy="true">
             {[...Array(9)].map((_, index) => (
               <div key={index} className="bg-[var(--card-bg)] rounded-xl p-6 border border-[var(--border-color)] h-48 flex flex-col justify-between">
@@ -188,9 +177,9 @@ export default function StockMarketPage() {
               </div>
             ))}
           </div>
-        ) : error ? (
+        ) : isError ? (
           <div className="bg-red-900/20 border border-red-800 text-red-100 p-5 rounded-lg shadow-sm transition-all duration-[var(--animation-duration-fast)]" role="alert">
-            {error}
+            {error?.message || 'Failed to load stock data. Please try again later.'}
           </div>
         ) : (
           <div className="animate-fadeIn" aria-live="polite">
