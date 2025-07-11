@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchStockData, transformStockData } from '../lib/api';
-import { CategorizedStockItem, StockData } from '../types/api';
+import { CategorizedStockItem } from '../types/api';
 import StockCard from '../components/StockCard';
 import SearchBar from '../components/SearchBar';
 import FilterControls from '../components/FilterControls';
@@ -24,7 +24,7 @@ const slugify = (text: string) => {
 };
 
 export default function StockMarketPage() {
-  const [stockData, setStockData] = useState<StockData | null>(null);
+
   const [stocks, setStocks] = useState<CategorizedStockItem[]>([]);
   const [filteredStocks, setFilteredStocks] = useState<CategorizedStockItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,8 +63,6 @@ export default function StockMarketPage() {
       try {
         setLoading(true);
         const data = await fetchStockData();
-        setStockData(data);
-        
         const transformedData = transformStockData(data);
         setStocks(transformedData);
         
