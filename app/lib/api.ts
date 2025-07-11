@@ -32,8 +32,15 @@ export function transformStockData(data: StockData): CategorizedStockItem[] {
           ...item,
           id,
           category,
-          currency_type: '',
-          last_difference: 0
+          currency_type: item.currency_type || '',
+          last_difference: item.last_difference || 0,
+          values: item.values.map(val => ({
+            ...val,
+            refined_value: val.refined_value || 0,
+            raw_value: val.raw_value || 0,
+            forged_value: val.forged_value || 0,
+          })),
+          planked_value: item.planked_value || 0,
         });
       } else {
 

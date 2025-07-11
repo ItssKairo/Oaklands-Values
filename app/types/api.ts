@@ -3,6 +3,9 @@ export interface StockValue {
   type: string;
   base_value: number;
   current_value: number;
+  forged_value: number;
+  refined_value: number;
+  raw_value: number;
 }
 
 export interface StockItem {
@@ -11,6 +14,7 @@ export interface StockItem {
   last_difference: number;
   current_difference: number;
   values: StockValue[];
+  planked_value: number;
 }
 
 export interface StockData {

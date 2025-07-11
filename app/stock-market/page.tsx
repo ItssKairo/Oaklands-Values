@@ -33,7 +33,7 @@ export default function StockMarketPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState(''); 
-  const [sortOrder, setSortOrder] = useState('value-desc'); 
+ 
   
 
   const [selectedStock, setSelectedStock] = useState<CategorizedStockItem | null>(null);
@@ -121,29 +121,10 @@ export default function StockMarketPage() {
     if (categoryFilter) {
       result = result.filter(stock => stock.category === categoryFilter);
     }
-    
 
-    result.sort((a, b) => {
-      switch (sortOrder) {
-        case 'name-asc':
-          return a.name.localeCompare(b.name);
-        case 'name-desc':
-          return b.name.localeCompare(a.name);
-        case 'value-asc':
-          return (a.values[0]?.current_value || 0) - (b.values[0]?.current_value || 0);
-        case 'value-desc':
-          return (b.values[0]?.current_value || 0) - (a.values[0]?.current_value || 0);
-        case 'change-asc':
-          return a.current_difference - b.current_difference;
-        case 'change-desc':
-          return b.current_difference - a.current_difference;
-        default:
-          return 0;
-      }
-    });
     
     setFilteredStocks(result);
-  }, [stocks, searchTerm, categoryFilter, sortOrder]);
+  }, [stocks, searchTerm, categoryFilter]);
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -181,8 +162,6 @@ export default function StockMarketPage() {
               <FilterControls 
                 categoryFilter={categoryFilter}
                 onCategoryChange={setCategoryFilter}
-                sortOrder={sortOrder}
-                onSortChange={setSortOrder}
                 availableCategories={availableCategories}
                 aria-label="Filter and sort stock market data"
               />
