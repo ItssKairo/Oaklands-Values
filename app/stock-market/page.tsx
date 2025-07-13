@@ -30,7 +30,12 @@ export default function StockMarketPage() {
 
   const [filteredStocks, setFilteredStocks] = useState<CategorizedStockItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState(''); 
+  const [categoryFilter, setCategoryFilter] = useState('');
+
+  useEffect(() => {
+    setSearchTerm(localStorage.getItem('stockSearchTerm') || '');
+    setCategoryFilter(localStorage.getItem('stockCategoryFilter') || '');
+  }, []); 
  
   
 
@@ -59,7 +64,7 @@ export default function StockMarketPage() {
       const leaderboardData = await fetchLeaderboardData();
       return { stockData, leaderboardData };
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 60 * 6,
     refetchOnWindowFocus: false,
   });
 
@@ -104,10 +109,16 @@ export default function StockMarketPage() {
       result = result.filter(stock =>
         stock.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
+      localStorage.setItem('stockSearchTerm', searchTerm);
+    } else {
+      localStorage.removeItem('stockSearchTerm');
     }
 
     if (categoryFilter) {
       result = result.filter(stock => stock.category === categoryFilter);
+      localStorage.setItem('stockCategoryFilter', categoryFilter);
+    } else {
+      localStorage.removeItem('stockCategoryFilter');
     }
 
     setFilteredStocks(result);
