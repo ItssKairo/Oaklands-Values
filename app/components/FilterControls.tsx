@@ -4,12 +4,16 @@ interface FilterControlsProps {
   categoryFilter: string;
   onCategoryChange: (category: string) => void;
   availableCategories: string[];
+  sortBy: 'none' | 'highest_value' | 'lowest_value';
+  onSortByChange: (sortBy: 'none' | 'highest_value' | 'lowest_value') => void;
 }
 
 export default function FilterControls({
   categoryFilter,
   onCategoryChange,
   availableCategories,
+  sortBy,
+  onSortByChange,
 }: FilterControlsProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-4 w-full">
@@ -35,7 +39,23 @@ export default function FilterControls({
         </div>
       </div>
 
-
+      <div className="relative flex-grow">
+        <select
+          value={sortBy}
+          onChange={(e) => onSortByChange(e.target.value as 'none' | 'highest_value')}
+          className="block w-full bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg py-2.5 pl-3 pr-10 text-sm font-medium text-white focus:outline-none focus:border-[var(--accent-purple)] focus:ring-1 focus:ring-[var(--accent-purple)] appearance-none transition-all duration-[var(--animation-duration-fast)]"
+          aria-label="Sort by"
+        >
+          <option value="none">Sort By</option>
+          <option value="highest_value">Highest Value</option>
+          <option value="lowest_value">Lowest Value</option>
+        </select>
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+          </svg>
+        </div>
+      </div>
     </div>
   );
 }

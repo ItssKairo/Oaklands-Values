@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface StockValue {
   difference: number;
   type: string;
@@ -11,16 +13,18 @@ export interface StockValue {
 }
 
 export interface StockItem {
+  currency_type: string;
   name: string;
+  ticker: string;
   values: StockValue[];
   category: string;
-  currency_type: string;
   current_difference: number;
   last_difference: number;
   planked_value?: number;
 }
 
-export interface CategorizedStockItem extends StockItem {
+export interface CategorizedStockItem extends Omit<StockItem, 'currency_type'> {
+  currency_type: ReactNode;
   id: string;
 }
 
@@ -38,7 +42,5 @@ export interface LeaderboardItem {
 
 export interface LeaderboardData {
   reset_time: string;
-  last_update: string;
-  currency_types: string[];
   leaderboard: LeaderboardItem[];
 }

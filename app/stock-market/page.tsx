@@ -31,10 +31,12 @@ export default function StockMarketPage() {
   const [filteredStocks, setFilteredStocks] = useState<CategorizedStockItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [sortBy, setSortBy] = useState<'none' | 'highest_value' | 'lowest_value'>('none');
 
   useEffect(() => {
     setSearchTerm(localStorage.getItem('stockSearchTerm') || '');
     setCategoryFilter(localStorage.getItem('stockCategoryFilter') || '');
+    setSortBy((localStorage.getItem('stockSortBy') as 'none' | 'highest_value' | 'lowest_value') || 'none');
   }, []); 
  
   
@@ -121,8 +123,26 @@ export default function StockMarketPage() {
       localStorage.removeItem('stockCategoryFilter');
     }
 
+    if (sortBy === 'highest_value') {
+      result.sort((a, b) => {
+        const maxA = Math.max(...a.values.map(v => v.current_value));
+        const maxB = Math.max(...b.values.map(v => v.current_value));
+        return maxB - maxA;
+      });
+      localStorage.setItem('stockSortBy', sortBy);
+    } else if (sortBy === 'lowest_value') {
+      result.sort((a, b) => {
+        const minA = Math.min(...a.values.map(v => v.current_value));
+        const minB = Math.min(...b.values.map(v => v.current_value));
+        return minA - minB;
+      });
+      localStorage.setItem('stockSortBy', sortBy);
+    } else {
+      localStorage.removeItem('stockSortBy');
+    }
+
     setFilteredStocks(result);
-  }, [stocks, searchTerm, categoryFilter]);
+  }, [stocks, searchTerm, categoryFilter, sortBy]);
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -163,6 +183,8 @@ export default function StockMarketPage() {
                 categoryFilter={categoryFilter}
                 onCategoryChange={setCategoryFilter}
                 availableCategories={availableCategories}
+                sortBy={sortBy}
+                onSortByChange={setSortBy}
                 aria-label="Filter and sort stock market data"
               />
             </div>

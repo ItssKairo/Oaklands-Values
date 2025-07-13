@@ -26,12 +26,14 @@ export async function fetchLeaderboardData(): Promise<LeaderboardData> {
 
   if (!response.ok) {
     const errorDetail = `Failed to fetch leaderboard data: ${response.status} ${response.statusText}`;
+    console.error(errorDetail);
     throw new Error(errorDetail);
   }
 
   try {
-    return await response.json();
-  } catch (error: unknown) {
+    const data = await response.json();
+    return data;
+  } catch (error) {
     console.error('JSON parsing error for leaderboard:', error);
     throw new Error(`Failed to parse leaderboard data response: ${error instanceof Error ? error.message : String(error)}`);
   }

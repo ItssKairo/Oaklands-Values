@@ -85,7 +85,7 @@ const StockModal: React.FC<StockModalProps> = ({ stock, onClose }) => {
       {stock && (
         <div
           ref={modalRef}
-          className="relative w-full max-w-3xl mx-auto bg-[var(--card-bg)] rounded-xl shadow-2xl border border-[var(--border-color)] transform transition-all duration-[var(--animation-duration-fast)] scale-95 animate-scale-in"
+          className="relative w-full max-w-3xl mx-auto bg-gradient-to-br from-[var(--card-bg)] to-[var(--card-bg-dark)] rounded-xl shadow-2xl border border-[var(--border-color)] transform transition-all duration-[var(--animation-duration-fast)] scale-95 animate-scale-in"
         >
           <button
             onClick={() => setIsClosing(true)}
@@ -101,10 +101,10 @@ const StockModal: React.FC<StockModalProps> = ({ stock, onClose }) => {
             <h2 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
               {stock.name}
             </h2>
-            <p className="text-gray-400 text-sm mb-6">Category: {stock.category} | Currency: {stock.currency_type}</p>
+            <p className="text-gray-400 text-sm mb-6">Category: {stock.category.charAt(0).toUpperCase() + stock.category.slice(1)} | Currency: {stock.currency_type}</p>
 
             <div className="mb-6">
-              <div className="p-6 rounded-lg mb-6 bg-gradient-to-r from-[var(--accent-purple)]/20 to-transparent border border-[var(--border-color)]">
+              <div className="p-6 rounded-xl mb-6 bg-gradient-to-r from-[var(--accent-purple)]/20 to-transparent border border-[var(--border-color)]">
                 <p className="text-xl font-semibold text-white">Current Value: <span className={getChangeColor(stock.current_difference)}>{formatValue(currentDisplayValue)}</span></p>
                 <p className={`text-base ${getChangeColor(stock.current_difference)}`}>
                   Change: {stock.current_difference > 0 ? '+' : ''}{stock.current_difference.toFixed(2)}%
@@ -114,10 +114,10 @@ const StockModal: React.FC<StockModalProps> = ({ stock, onClose }) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {stock.values.map((val, index) => (
-                <div key={index} className="bg-[var(--card-bg)] p-5 rounded-lg border border-[var(--border-color)] shadow-md">
-                  <p className="text-gray-400 text-sm mb-1">{val.type}</p>
-                  <p className="text-white text-xl font-semibold mb-2">{formatValue(val.current_value)}</p>
-                  <p className={`text-sm ${getChangeColor(val.difference || 0)}`}>
+                <div key={index} className="bg-[var(--card-bg)] p-4 rounded-xl border border-[var(--border-color)] shadow-sm">
+                  <p className="text-gray-400 text-xs mb-1 uppercase tracking-wider">{val.type.charAt(0).toUpperCase() + val.type.slice(1)}</p>
+                  <p className="text-white text-lg font-semibold mb-1">{formatValue(val.current_value)}</p>
+                  <p className={`text-xs ${getChangeColor(val.difference || 0)}`}>
                     {(val.difference || 0) > 0 ? '▲' : '▼'} {(val.difference || 0) > 0 ? '+' : ''}{(val.difference || 0).toFixed(2)}%
                   </p>
                 </div>

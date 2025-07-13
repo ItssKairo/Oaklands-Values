@@ -33,9 +33,9 @@ export default function Navigation() {
     <>
 
       {showBanner && (
-        <div className="bg-gradient-to-r from-purple-800 to-purple-600 text-white text-center py-2 px-4 relative">
+        <div className="bg-gradient-to-r from-red-900 to-red-400 text-white text-center py-2 px-4 relative">
           <p className="text-sm font-semibold">
-            Oakland Values – Early Beta: Some if not all API data may be incorrect compared to real in-game values.
+            Oakland Values – Public Experience API is currently down. Values will be updated when the API is back up.
           </p>
           <button 
             onClick={() => setShowBanner(false)}

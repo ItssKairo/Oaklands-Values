@@ -24,7 +24,9 @@ export default function Leaderboard({ leaderboard }: LeaderboardProps) {
             {leaderboard.map((item) => (
               <tr key={item.position} className="hover:bg-[var(--hover-bg)] transition-colors duration-[var(--animation-duration-fast)]">
                 <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-white">{item.position}</td>
-                <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-300">{item.name}</td>
+                <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
+                  {item.name.replace(/_/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                </td>
                 <td className="px-4 py-2 whitespace-nowrap text-sm text-green-400">{item.value.toLocaleString()}</td>
               </tr>
             ))}

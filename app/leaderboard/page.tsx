@@ -1,5 +1,6 @@
 'use client';
 
+
 import { useQuery } from '@tanstack/react-query';
 import { fetchLeaderboardData } from '../lib/api';
 import { LeaderboardData } from '../types/api';
@@ -9,9 +10,9 @@ import Navigation from '../components/Navigation';
 
 export default function LeaderboardPage() {
   const { data: leaderboardData, isLoading, isError, error } = useQuery<LeaderboardData>({
-    queryKey: ['leaderboardData'],
+    queryKey: ['materialsLeaderboardData'],
     queryFn: fetchLeaderboardData,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
   });
 
@@ -22,6 +23,7 @@ export default function LeaderboardPage() {
         <div className="max-w-7xl mx-auto">
           <header className="mb-10 relative overflow-hidden rounded-xl p-8 md:p-12 bg-gradient-to-br from-[var(--background)] to-[var(--accent-grey)] border border-[var(--border-color)] shadow-lg">
             <div className="relative z-10 text-center">
+
               <h1 className="text-4xl md:text-5xl font-extrabold mb-3 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent inline-block tracking-tight leading-tight">
                 Top Materials Leaderboard
               </h1>
@@ -42,13 +44,13 @@ export default function LeaderboardPage() {
 
           {isError ? (
             <div className="bg-red-900/20 border border-red-800 text-red-100 p-5 rounded-lg shadow-sm transition-all duration-[var(--animation-duration-fast)]" role="alert">
-              {error?.message || 'An unknown error occurred.'}
+              {error?.message === 'Bad Gateway: Leaderboard data is temporarily unavailable.' ? 'Leaderboard data is temporarily unavailable.' : (error?.message || 'An unknown error occurred.')}
             </div>
           ) : leaderboardData ? (
-            <Leaderboard
-              leaderboard={leaderboardData.leaderboard}
-
-            />
+              <Leaderboard
+                leaderboard={leaderboardData?.leaderboard || []}
+              />
+            
           ) : isLoading ? (
             <div className="animate-pulse bg-[var(--card-bg)] rounded-xl p-6 border border-[var(--border-color)] shadow-lg mb-8 overflow-x-auto">
               <div className="h-8 bg-gray-700 rounded w-3/4 mb-4"></div>
