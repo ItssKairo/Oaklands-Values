@@ -41,22 +41,34 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ resetTime }) => {
 
   const timerComponents: React.JSX.Element[] = [];
 
-  Object.keys(timeLeft).forEach((interval) => {
-    if (!timeLeft[interval as keyof typeof timeLeft]) {
-      return;
-    }
+  const { hours, minutes, seconds } = timeLeft as { hours?: number; minutes?: number; seconds?: number };
 
+  if (hours !== undefined && hours > 0) {
     timerComponents.push(
-      <span key={interval}>
-        {timeLeft[interval as keyof typeof timeLeft]} {interval.charAt(0)}
+      <span key="hours">
+        {hours} {hours === 1 ? 'hour' : 'hours'}
       </span>
     );
-  });
+  }
+  if (minutes !== undefined && minutes > 0 || (hours !== undefined && hours > 0 && minutes !== undefined)) {
+    timerComponents.push(
+      <span key="minutes">
+        {minutes} {minutes === 1 ? 'minute' : 'minutes'}
+      </span>
+    );
+  }
+  if (seconds !== undefined && seconds > 0 || ((hours !== undefined && hours > 0 || minutes !== undefined && minutes > 0) && seconds !== undefined)) {
+    timerComponents.push(
+      <span key="seconds">
+        {seconds} {seconds === 1 ? 'second' : 'seconds'}
+      </span>
+    );
+  }
 
   return (
     <div className="text-sm text-gray-400 mt-4 text-center">
       {timerComponents.length ? (
-        <p>Next Refresh in: {timerComponents.join(' ')}</p>
+        <p>Next Refresh in: {timerComponents.join(', ')}</p>
       ) : (
         <p>Refreshing soon...</p>
       )}

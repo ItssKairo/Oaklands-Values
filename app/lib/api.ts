@@ -56,8 +56,8 @@ export function transformStockData(data: StockData): CategorizedStockItem[] {
             refined_value: val.refined_value || 0,
             raw_value: val.raw_value || 0,
             forged_value: val.forged_value || 0,
+            planked_value: val.planked_value || 0,
           })),
-          planked_value: item.planked_value || 0,
         });
       } else {
 

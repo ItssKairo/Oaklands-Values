@@ -63,22 +63,17 @@ const StockModal: React.FC<StockModalProps> = ({ stock, onClose }) => {
     return 'text-gray-400';
   };
 
+  const categoryValueMap: { [key: string]: string } = {
+    ore: 'forged',
+    rock: 'forged',
+    tree: 'planked',
+  };
+
   const getCurrentDisplayValue = () => {
     if (!stock) return 0;
 
-    const refinedValue = stock.values.find(val => val.type === 'refined')?.current_value || 0;
-    const forgedValue = stock.values.find(val => val.type === 'forged')?.current_value || 0;
-    const plankedValue = stock.values.find(val => val.type === 'planked')?.current_value || 0;
-
-    switch (stock.category.toLowerCase()) {
-      case 'ore':
-      case 'rock':
-        return forgedValue;
-      case 'tree':
-        return plankedValue;
-      default:
-        return refinedValue;
-    }
+    const preferredType = categoryValueMap[stock.category.toLowerCase()] || 'refined';
+    return stock.values.find(val => val.type === preferredType)?.current_value || 0;
   };
 
   const currentDisplayValue = getCurrentDisplayValue();

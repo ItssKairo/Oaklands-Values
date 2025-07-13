@@ -7,6 +7,7 @@ export interface StockValue {
   refined_value?: number;
   raw_value?: number;
   forged_value?: number;
+  planked_value?: number;
 }
 
 export interface StockItem {
