@@ -1,6 +1,7 @@
 import { StockData, CategorizedStockItem, StockItem, LeaderboardData } from '../types/api';
+import { AppConfig } from './config';
 
-const API_URL = 'https://public-api.typicaldevelopers.com/v1/oaklands/economy/stock-market';
+const API_URL = AppConfig.stockApiUrl;
 
 
 export async function fetchStockData(): Promise<StockData> {
@@ -21,7 +22,7 @@ export async function fetchStockData(): Promise<StockData> {
 
 
 export async function fetchLeaderboardData(): Promise<LeaderboardData> {
-  const LEADERBOARD_API_URL = 'https://public-api.typicaldevelopers.com/v1/oaklands/leaderboards/top-materials-today?currencyType=Cash';
+  const LEADERBOARD_API_URL = AppConfig.leaderboardApiUrl;
   const response = await fetch(LEADERBOARD_API_URL, { next: { revalidate: 300 } });
 
   if (!response.ok) {
@@ -62,7 +63,7 @@ export function transformStockData(data: StockData): CategorizedStockItem[] {
           })),
         });
       } else {
-
+        console.warn(`Skipping invalid stock item in category ${category}:`, item);
       }
     });
   };

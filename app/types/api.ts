@@ -1,5 +1,3 @@
-import { ReactNode } from "react";
-
 export interface StockValue {
   difference: number;
   type: string;
@@ -20,11 +18,10 @@ export interface StockItem {
   category: string;
   current_difference: number;
   last_difference: number;
-  planked_value?: number;
 }
 
 export interface CategorizedStockItem extends Omit<StockItem, 'currency_type'> {
-  currency_type: ReactNode;
+  currency_type: string;
   id: string;
 }
 

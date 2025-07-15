@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { AppConfig } from '../../config';
+import { AppConfig } from '../lib/config';
 
 export default function Navigation() {
   const pathname = usePathname();
