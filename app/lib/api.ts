@@ -4,20 +4,25 @@ import { AppConfig } from './config';
 const API_URL = AppConfig.stockApiUrl;
 
 
-export async function fetchStockData(): Promise<StockData> {
-  const response = await fetch(API_URL, { next: { revalidate: 300 } });
-  
+async function handleApiResponse<T>(response: Response, dataType: string): Promise<T> {
   if (!response.ok) {
-    const errorDetail = `Failed to fetch stock data: ${response.status} ${response.statusText}`;
+    const errorDetail = `Failed to fetch ${dataType}: ${response.status} ${response.statusText}`;
+    console.error(errorDetail);
     throw new Error(errorDetail);
   }
-  
   try {
     return await response.json();
   } catch (error: unknown) {
-      console.error('JSON parsing error:', error);
-      throw new Error(`Failed to parse stock data response: ${error instanceof Error ? error.message : String(error)}`);
+    console.error(`JSON parsing error for ${dataType}:`, error);
+    throw new Error(`Failed to parse ${dataType} response: ${error instanceof Error ? error.message : String(error)}`);
   }
+}
+
+
+export async function fetchStockData(): Promise<StockData> {
+  const response = await fetch(API_URL, { next: { revalidate: 300 } });
+  
+  return handleApiResponse(response, 'stock data');
 }
 
 
@@ -25,25 +30,11 @@ export async function fetchLeaderboardData(): Promise<LeaderboardData> {
   const LEADERBOARD_API_URL = AppConfig.leaderboardApiUrl;
   const response = await fetch(LEADERBOARD_API_URL, { next: { revalidate: 300 } });
 
-  if (!response.ok) {
-    const errorDetail = `Failed to fetch leaderboard data: ${response.status} ${response.statusText}`;
-    console.error(errorDetail);
-    throw new Error(errorDetail);
-  }
-
-  try {
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('JSON parsing error for leaderboard:', error);
-    throw new Error(`Failed to parse leaderboard data response: ${error instanceof Error ? error.message : String(error)}`);
-  }
+  return handleApiResponse(response, 'leaderboard data');
 }
 
 export function transformStockData(data: StockData): CategorizedStockItem[] {
   const allStocks: CategorizedStockItem[] = [];
-  
-
   const processCategory = (items: Record<string, StockItem>, category: 'tree' | 'rock' | 'ore') => {
     Object.entries(items).forEach(([id, item]: [string, StockItem]) => {
 
@@ -72,13 +63,9 @@ export function transformStockData(data: StockData): CategorizedStockItem[] {
   if (data.trees) {
     processCategory(data.trees, 'tree');
   }
-  
-
   if (data.rocks) {
     processCategory(data.rocks, 'rock');
   }
-  
-
   if (data.ores) {
     processCategory(data.ores, 'ore');
   }
