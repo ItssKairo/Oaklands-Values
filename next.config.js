@@ -2,6 +2,7 @@
 const nextConfig = {
   compiler: {
     emotion: false,
+    lightningcss: false,
   },
 };
 
